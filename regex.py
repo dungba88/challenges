@@ -14,11 +14,9 @@ class Matcher(object):
 
     def do_match_with_cache(self, s, pattern, s_idx, pattern_idx):
         key = str(s_idx) + '_' + str(pattern_idx)
-        if key in self.caches:
-            return self.caches[key]
-        result = self.do_match(s, pattern, s_idx, pattern_idx)
-        self.caches[key] = result
-        return result
+        if not key in self.caches:
+            self.caches[key] = self.do_match(s, pattern, s_idx, pattern_idx)
+        return self.caches[key]
 
     def do_match(self, s, pattern, s_idx, pattern_idx):
         if s_idx >= len(s) or pattern_idx >= len(pattern):
