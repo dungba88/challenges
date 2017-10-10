@@ -10,7 +10,7 @@ def match(s, pattern):
 
 def do_match(s, pattern, s_idx, pattern_idx):
     if s_idx >= len(s) or pattern_idx >= len(pattern):
-        if pattern_idx < len(pattern):
+        if pattern_idx < len(pattern): # * matches empty string
             return pattern[pattern_idx] == '*'
         return s_idx >= len(s) and pattern_idx >= len(pattern)
     if not is_match(s[s_idx], pattern[pattern_idx]):
