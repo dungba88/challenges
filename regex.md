@@ -13,7 +13,7 @@ Build a regular expression matcher which can accept:
 ```
 match(a, a) = true;
 match(a, b) = false;
-match(c, .) = true
+match(c, .) = true;
 match(de, *) = true;
 match(abc, c*) = false;
 ```
