@@ -21,7 +21,6 @@ class Matcher(object):
         return result
 
     def do_match(self, s, pattern, s_idx, pattern_idx):
-        print(s_idx, pattern_idx)
         if s_idx >= len(s) or pattern_idx >= len(pattern):
             if pattern_idx == len(pattern) - 1: # * matches empty string
                 return pattern[pattern_idx] == '*'
@@ -49,21 +48,21 @@ class Matcher(object):
 
 def main():
     testcases = [
-        # ['a', 'a', True],
-        # ['a', 'b', False],
-        # ['c', '.', True],
-        # ['abcd', 'a.c', False],
-        # ['', '*', True],
-        # ['abc', 'c*', False],
-        # ['abc', '*c*', True],
-        # ['abc', '*d', False],
-        # ['bedc', '*b*c', True],
-        # ['abcd', 'a.c*', True],
-        # ['abcd', 'a.c*.', True],
-        # ['abcd', 'a*d', True],
-        # ['', '*.', False],
+        ['a', 'a', True],
+        ['a', 'b', False],
+        ['c', '.', True],
+        ['abcd', 'a.c', False],
+        ['', '*', True],
+        ['abc', 'c*', False],
+        ['abc', '*c*', True],
+        ['abc', '*d', False],
+        ['bedc', '*b*c', True],
+        ['abcd', 'a.c*', True],
+        ['abcd', 'a.c*.', True],
+        ['abcd', 'a*d', True],
+        ['', '*.', False],
         ['abcabfxyza', '*ab*klm', False],
-        # ['abcabf', '*ab*f', True]
+        ['abcabf', '*ab*f', True]
     ]
 
     for case in testcases:
