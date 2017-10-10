@@ -64,6 +64,7 @@ def main():
     ]
 
     for case in testcases:
+        print('Executing test case %s %s %s' % (case[0], case[1], case[2]))
         assert Matcher().match(case[0], case[1]) == case[2]
 
 if __name__ == '__main__':
