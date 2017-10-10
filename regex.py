@@ -10,7 +10,7 @@ def match(s, pattern):
 
 def do_match(s, pattern, s_idx, pattern_idx):
     if s_idx >= len(s) or pattern_idx >= len(pattern):
-        if pattern_idx < len(pattern): # * matches empty string
+        if pattern_idx == len(pattern) - 1: # * matches empty string
             return pattern[pattern_idx] == '*'
         return s_idx >= len(s) and pattern_idx >= len(pattern)
     if not is_match(s[s_idx], pattern[pattern_idx]):
@@ -47,6 +47,7 @@ def main():
     assert match('abcd', 'a.c*') is True
     assert match('abcd', 'a.c*.') is True
     assert match('abcd', 'a*d') is True
+    assert match('', '*.') is False
 
 if __name__ == '__main__':
     main()
