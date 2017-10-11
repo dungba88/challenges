@@ -16,6 +16,7 @@ class Matcher(object):
         s_idx = 0
         pattern_idx = 0
         last_asterisk_pos = -1
+        last_s_idx = -1
 
         while s_idx < s_len and pattern_idx < pattern_len:
             if not self.is_match(s[s_idx], pattern[pattern_idx]):
@@ -25,6 +26,8 @@ class Matcher(object):
                     s_idx += 1
                 else: # current sequence not good, reset from last position
                     pattern_idx = last_asterisk_pos + 1
+                    last_s_idx += 1
+                    s_idx = last_s_idx
                 continue
 
             if pattern[pattern_idx] != '*':
@@ -33,7 +36,13 @@ class Matcher(object):
                 if pattern_idx == pattern_len - 1:
                     return True
                 last_asterisk_pos = pattern_idx
+                last_s_idx = s_idx
             pattern_idx += 1
+
+            if last_asterisk_pos != -1 and pattern_idx == pattern_len and s_idx < s_len:
+                pattern_idx = last_asterisk_pos + 1
+                last_s_idx += 1
+                s_idx = last_s_idx
 
         return s_idx == s_len and (pattern_idx == pattern_len or (pattern_idx == pattern_len - 1 and pattern[pattern_idx] == '*'))
 
@@ -58,7 +67,7 @@ def main():
         ['abcabfxyza', '*ab*klm', False],
         ['abcabf', '*ab*f', True],
         ['abcabf', '*abf', True],
-        ['abccccc', '*ccc', True]
+        ['abcccccdxbeeeef', '*cccd*ef', True]
     ]
 
     for case in testcases:
