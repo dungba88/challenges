@@ -10,7 +10,7 @@ class Matcher(object):
     def match(self, s, pattern):
         s_len = len(s)
         pattern_len = len(pattern)
-        
+
         s_idx = 0
         pattern_idx = 0
         last_asterisk_pos = -1
