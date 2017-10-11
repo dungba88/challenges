@@ -60,7 +60,8 @@ def main():
         ['abcd', 'a*d', True],
         ['', '*.', False],
         ['abcabfxyza', '*ab*klm', False],
-        ['abcabf', '*ab*f', True]
+        ['abcabf', '*ab*f', True],
+        ['abccccc', '*ccc', True]
     ]
 
     for case in testcases:
