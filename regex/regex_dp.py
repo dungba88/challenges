@@ -24,7 +24,7 @@ class Matcher(object):
                 if last_asterisk_pos == pattern_idx - 1: # find until match
                     s_idx += 1
                 else: # current sequence not good, reset from last position
-                    s_idx = last_asterisk_pos + 1
+                    pattern_idx = last_asterisk_pos + 1
                 continue
 
             if pattern[pattern_idx] != '*':
@@ -42,21 +42,22 @@ class Matcher(object):
 
 def main():
     testcases = [
-        ['a', 'a', True],
-        ['a', 'b', False],
-        ['c', '.', True],
-        ['abcd', 'a.c', False],
-        ['', '*', True],
-        ['abc', 'c*', False],
-        ['abc', '*c*', True],
-        ['abc', '*d', False],
-        ['bedc', '*b*c', True],
-        ['d', '*', True],
-        ['abcd', 'a.c*.', True],
-        ['abcd', 'a*d', True],
-        ['', '*.', False],
-        ['abcabfxyza', '*ab*klm', False],
-        ['abcabf', '*ab*f', True]
+        # ['a', 'a', True],
+        # ['a', 'b', False],
+        # ['c', '.', True],
+        # ['abcd', 'a.c', False],
+        # ['', '*', True],
+        # ['abc', 'c*', False],
+        # ['abc', '*c*', True],
+        # ['abc', '*d', False],
+        # ['bedc', '*b*c', True],
+        # ['d', '*', True],
+        # ['abcd', 'a.c*.', True],
+        # ['abcd', 'a*d', True],
+        # ['', '*.', False],
+        # ['abcabfxyza', '*ab*klm', False],
+        # ['abcabf', '*ab*f', True],
+        ['abcabf', '*abf', True]
     ]
 
     for case in testcases:
