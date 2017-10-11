@@ -42,22 +42,23 @@ class Matcher(object):
 
 def main():
     testcases = [
-        # ['a', 'a', True],
-        # ['a', 'b', False],
-        # ['c', '.', True],
-        # ['abcd', 'a.c', False],
-        # ['', '*', True],
-        # ['abc', 'c*', False],
-        # ['abc', '*c*', True],
-        # ['abc', '*d', False],
-        # ['bedc', '*b*c', True],
-        # ['d', '*', True],
-        # ['abcd', 'a.c*.', True],
-        # ['abcd', 'a*d', True],
-        # ['', '*.', False],
-        # ['abcabfxyza', '*ab*klm', False],
-        # ['abcabf', '*ab*f', True],
-        ['abcabf', '*abf', True]
+        ['a', 'a', True],
+        ['a', 'b', False],
+        ['c', '.', True],
+        ['abcd', 'a.c', False],
+        ['', '*', True],
+        ['abc', 'c*', False],
+        ['abc', '*c*', True],
+        ['abc', '*d', False],
+        ['bedc', '*b*c', True],
+        ['d', '*', True],
+        ['abcd', 'a.c*.', True],
+        ['abcd', 'a*d', True],
+        ['', '*.', False],
+        ['abcabfxyza', '*ab*klm', False],
+        ['abcabf', '*ab*f', True],
+        ['abcabf', '*abf', True],
+        ['abccccc', '*ccc', True]
     ]
 
     for case in testcases:
