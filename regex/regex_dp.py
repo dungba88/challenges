@@ -19,9 +19,9 @@ class Matcher(object):
             if not self.is_match(s[s_idx], pattern[pattern_idx]):
                 if last_asterisk_pos == -1:
                     return False
-                if last_asterisk_pos == pattern_idx - 1:
+                if last_asterisk_pos == pattern_idx - 1: # find until match
                     s_idx += 1
-                else:
+                else: # current sequence not good, reset from last position
                     s_idx = last_asterisk_pos + 1
                 continue
 
