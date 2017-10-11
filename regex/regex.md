@@ -6,7 +6,7 @@ Build a regular expression matcher which can accept:
 
 - a-z  : matches respective character
 - .    : matches any single character
-- *    : matches any string (including empty string)
+- \*   : matches any string (including empty string)
 
 # example
 
