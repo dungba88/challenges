@@ -11,9 +11,9 @@ Build a regular expression matcher which can accept:
 # example
 
 ```
-match(a, a) = true;
-match(a, b) = false;
-match(c, .) = true;
-match(de, *) = true;
-match(abc, c*) = false;
+match(a, a) = true
+match(a, b) = false
+match(c, .) = true
+match(de, *) = true
+match(abc, c*) = false
 ```
