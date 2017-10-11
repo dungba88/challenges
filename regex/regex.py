@@ -42,9 +42,7 @@ class Matcher(object):
         return False
 
     def is_match(self, char, pattern):
-        if pattern == '*' or pattern == '.':
-            return True
-        return char == pattern
+        return pattern == '*' or pattern == '.' or char == pattern
 
 def main():
     testcases = [

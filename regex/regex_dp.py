@@ -38,9 +38,7 @@ class Matcher(object):
         return s_idx == s_len and (pattern_idx == pattern_len or (pattern_idx == pattern_len - 1 and pattern[pattern_idx] == '*'))
 
     def is_match(self, char, pattern):
-        if pattern == '*' or pattern == '.':
-            return True
-        return char == pattern
+        return pattern == '*' or pattern == '.' or char == pattern
 
 def main():
     testcases = [
