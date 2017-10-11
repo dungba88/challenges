@@ -3,6 +3,8 @@ A simple regex matcher which can accept:
 - a-z
 - . for any single character
 - * for any string (including empty string)
+
+This algorithm uses recursion with memoization approach.
 """
 
 class Matcher(object):
