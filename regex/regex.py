@@ -58,6 +58,7 @@ def main():
         ['abcd', 'a.c*', True],
         ['abcd', 'a.c*.', True],
         ['abcd', 'a*d', True],
+        ['abcd', 'a****d', True],
         ['', '*.', False],
         ['abcabfxyza', '*ab*klm', False],
         ['abcabf', '*abf', True],
