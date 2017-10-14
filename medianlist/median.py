@@ -28,8 +28,6 @@ class MedianList(object):
             idx = int((low + high) / 2)
             if self.list[idx] < number and idx == list_len - 1:
                 return list_len
-            if self.list[idx] > number and idx == 0:
-                return 0
             if self.list[idx] == number or (self.list[idx] < number and self.list[idx + 1] > number):
                 return idx + 1
             if self.list[idx] < number:
