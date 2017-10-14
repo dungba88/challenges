@@ -33,7 +33,7 @@ class Matcher(object):
             pattern_idx += 1
 
         if pattern_idx == len(pattern) - 1:
-            return True
+             return True
         for i in range(s_idx, len(s)):
             if self.do_match_with_cache(s, pattern, i, pattern_idx + 1):
                 return True
@@ -46,26 +46,31 @@ class Matcher(object):
 
 def main():
     testcases = [
-        ['a', 'a', True],
-        ['a', 'b', False],
-        ['c', '.', True],
-        ['abcd', 'a.c', False],
-        ['', '*', True],
-        ['abc', 'c*', False],
-        ['abc', '*c*', True],
-        ['abc', '*d', False],
-        ['bedc', '*b*c', True],
-        ['abcd', 'a.c*', True],
-        ['abcd', 'a.c*.', True],
-        ['abcd', 'a*d', True],
-        ['', '*.', False],
-        ['abcabfxyza', '*ab*klm', False],
-        ['abcabf', '*ab*f', True]
+        # ['a', 'a', True],
+        # ['a', 'b', False],
+        # ['c', '.', True],
+        # ['abcd', 'a.c', False],
+        # ['', '*', True],
+        # ['abc', 'c*', False],
+        # ['abc', '*c*', True],
+        # ['abc', '*d', False],
+        # ['bedc', '*b*c', True],
+        # ['abcd', 'a.c*', True],
+        # ['abcd', 'a.c*.', True],
+        # ['abcd', 'a*d', True],
+        # ['', '*.', False],
+        # ['abcabfxyza', '*ab*klm', False],
+        # ['abcabf', '*ab*f', True],
+        ['aaaaaaaaaa', '**********f', False],
+        ['abcd', 'a****************************************************************************************************f', False]
     ]
 
+    import time
     for case in testcases:
         print('Executing test case %s %s %s' % (case[0], case[1], case[2]))
+        start = time.time()
         assert Matcher().match(case[0], case[1]) == case[2]
+        print('Executed successfully in %s' % ((time.time() - start) * 1000))
 
 if __name__ == '__main__':
     main()
