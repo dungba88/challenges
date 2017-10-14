@@ -3,6 +3,8 @@ A simple regex matcher which can accept:
 - a-z
 - . for any single character
 - * for any string (including empty string)
+
+This algorithm uses recursion with memoization approach.
 """
 
 class Matcher(object):
@@ -40,29 +42,27 @@ class Matcher(object):
         return False
 
     def is_match(self, char, pattern):
-        if pattern == '*' or pattern == '.':
-            return True
-        return char == pattern
+        return pattern == '*' or pattern == '.' or char == pattern
 
 def main():
     testcases = [
-        # ['a', 'a', True],
-        # ['a', 'b', False],
-        # ['c', '.', True],
-        # ['abcd', 'a.c', False],
-        # ['', '*', True],
-        # ['abc', 'c*', False],
-        # ['abc', '*c*', True],
-        # ['abc', '*d', False],
-        # ['bedc', '*b*c', True],
-        # ['abcd', 'a.c*', True],
-        # ['abcd', 'a.c*.', True],
-        # ['abcd', 'a*d', True],
-        # ['', '*.', False],
-        # ['abcabfxyza', '*ab*klm', False],
-        # ['abcabf', '*ab*f', True],
-        ['aaaaaaaaaa', '**********f', False],
-        ['abcd', 'a****************************************************************************************************f', False]
+        ['a', 'a', True],
+        ['a', 'b', False],
+        ['c', '.', True],
+        ['abcd', 'a.c', False],
+        ['', '*', True],
+        ['abc', 'c*', False],
+        ['abc', '*c*', True],
+        ['abc', '*d', False],
+        ['bedc', '*b*c', True],
+        ['abcd', 'a.c*', True],
+        ['abcd', 'a.c*.', True],
+        ['abcd', 'a*d', True],
+        ['abcd', 'a****d', True],
+        ['', '*.', False],
+        ['abcabfxyza', '*ab*klm', False],
+        ['abcabf', '*abf', True],
+        ['abccccc', '*ccc', True]
     ]
 
     import time
