@@ -22,8 +22,10 @@ class MedianList(object):
         if not self.list:
             return 0
         list_len = len(self.list)
-        idx = int(list_len / 2)
-        while True:
+        low = 0
+        high = list_len - 1
+        while low <= high:
+            idx = int((low + high) / 2)
             if self.list[idx] < number and idx == list_len - 1:
                 return list_len
             if self.list[idx] > number and idx == 0:
@@ -31,10 +33,10 @@ class MedianList(object):
             if self.list[idx] == number or (self.list[idx] < number and self.list[idx + 1] > number):
                 return idx + 1
             if self.list[idx] < number:
-                idx = int((list_len + idx) / 2)
+                low = idx + 1
             else:
-                idx = int(idx / 2)
-        return idx
+                high = idx - 1
+        return 0
 
 def main():
     testcases = [
