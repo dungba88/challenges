@@ -11,8 +11,8 @@ class MedianList(object):
             return 0
         list_len = len(self.list)
         if list_len % 2 == 0:
-            return float(self.list[list_len / 2 - 1] + self.list[list_len / 2]) / 2
-        return self.list[(list_len - 1) / 2]
+            return float(self.list[int(list_len / 2 - 1)] + self.list[int(list_len / 2)]) / 2
+        return self.list[int((list_len - 1) / 2)]
 
     def binary_search(self, number):
         """
