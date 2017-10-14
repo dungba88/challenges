@@ -1,7 +1,6 @@
 class MedianList(object):
     def __init__(self):
         self.list = []
-        self.median = 0
 
     def add_num(self, number):
         idx = self.binary_search(number)
