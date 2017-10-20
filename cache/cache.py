@@ -5,8 +5,8 @@ class Cache(object):
         self.algorithm.target = self
 
     def put(self, key, value):
-        self.data[key] = value
         self.algorithm.on_put(key, value)
+        self.data[key] = value
 
     def get(self, key):
         if key not in self.data:

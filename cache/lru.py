@@ -65,11 +65,11 @@ class LRUCacheAlgorithm(object):
         if key in self.index_map:
             self.index_list.move_to_end(self.index_map[key])
             return
+        if len(self.target.data) >= self.max_item:
+            self._evict()
         node = LinkedListNode(key)
         self.index_list.append(node)
         self.index_map[key] = node
-        if len(self.target.data) > self.max_item:
-            self._evict()
 
     def _evict(self):
         evicted = self.index_list.remove(self.index_list.head)
