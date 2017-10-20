@@ -1,3 +1,16 @@
+"""
+Implementation for LFU eviction algorithm.
+
+The idea is to build a map from frequency to item, and store the minimum
+access frequency. When eviction happens, we just need to remove the item
+with access frequency equals to the minimum.
+
+When we put new item to the cache, the minimum will be reset to 0. When
+we access existing item, the frequency for that item will be increased
+by 1. If there is no item with access frequency equals to the minimum,
+we will increase the minimum by 1.
+"""
+
 class LFUCacheAlgorithm(object):
     def __init__(self, max_item=3):
         self.target = None

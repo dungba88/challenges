@@ -1,3 +1,12 @@
+"""
+Implementation for LRU eviction algorithm.
+
+The idea is to build a doubly linked list to store all cache items.
+Whenever an item is accessed, it will be moved to the end of the list.
+The doubly linked list makes sure put() and get() time complexity is
+always O(1) - linear.
+"""
+
 class LinkedListNode(object):
     def __init__(self, value):
         self.value = value
