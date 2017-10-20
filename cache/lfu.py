@@ -5,7 +5,6 @@ class LFUCacheAlgorithm(object):
         self.min_accessed_times = 0
         self.times_map = dict()
         self.nodes_map = dict()
-        self.target = None
 
     def _update_map(self, key, times):
         """update times and nodes map with new times value"""
