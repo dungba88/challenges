@@ -44,4 +44,3 @@ class LFUCacheAlgorithm(object):
             text += str(k) + '(' + str(self.times_map[k]) + ') '
         text += ' (Min accessed times: ' + str(self.min_accessed_times) + ')'
         print(text)
-
