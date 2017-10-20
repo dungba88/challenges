@@ -13,6 +13,7 @@ class DoubleLinkedList(object):
         if not self.head:
             self.tail = self.head = node
             return
+        node.next = None
         node.prev = self.tail
         self.tail.next = node
         self.tail = node
@@ -23,6 +24,7 @@ class DoubleLinkedList(object):
             return node
         if node == self.head:
             self.head = self.head.next
+            self.head.prev = None
             return node
         if node == self.tail:
             self.tail = self.tail.prev
@@ -30,6 +32,7 @@ class DoubleLinkedList(object):
             return node
         node.prev.next = node.next
         node.next.prev = node.prev
+        node.prev = node.next = None
         return node
 
     def move_to_end(self, node):
@@ -57,13 +60,11 @@ class LRUCacheAlgorithm(object):
         if key not in self.index_map:
             return
         index = self.index_map[key]
-        if not index.prev:
-            return
         self.index_list.move_to_end(index)
 
     def on_put(self, key, _):
         if key in self.index_map:
-            self.index_list.move_to_end(self.index_map[key])
+            self.on_get(key)
             return
         if len(self.target.data) >= self.max_item:
             self._evict()
