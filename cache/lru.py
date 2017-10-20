@@ -69,6 +69,9 @@ class LRUCacheAlgorithm(object):
         self.index_list.append(node)
         self.index_map[key] = node
         if len(self.target.data) > self.max_item:
-            evicted = self.index_list.remove(self.index_list.head)
-            del self.target.data[evicted.value]
-            del self.index_map[evicted.value]
+            self._evict()
+
+    def _evict(self):
+        evicted = self.index_list.remove(self.index_list.head)
+        del self.target.data[evicted.value]
+        del self.index_map[evicted.value]

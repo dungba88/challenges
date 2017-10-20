@@ -10,6 +10,10 @@ class Cache(object):
 
     def get(self, key):
         if key not in self.data:
-            return None
+            return self.on_miss(key)
         self.algorithm.on_get(key)
         return self.data[key]
+
+    def on_miss(self, key):
+        # we don't care about this case for now
+        return None

@@ -2,6 +2,13 @@ from cache import Cache
 from lru import LRUCacheAlgorithm
 
 def main():
+    test_lru()
+    test_lfu()
+
+def test_lfu():
+    pass
+
+def test_lru():
     algorithm = LRUCacheAlgorithm(max_item=3)
     cache = Cache(algorithm=algorithm)
 
