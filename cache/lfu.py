@@ -20,7 +20,7 @@ class LFUCacheAlgorithm(object):
         self.nodes_map = dict()
 
     def _update_map(self, key, times):
-        """update times and nodes map with new times value"""
+        """update frequency and nodes map with new frequency value"""
         self.times_map[key] = times
         if times not in self.nodes_map:
             self.nodes_map[times] = dict()
