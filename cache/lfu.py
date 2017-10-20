@@ -29,12 +29,12 @@ class LFUCacheAlgorithm(object):
     def on_get(self, key):
         if key not in self.times_map:
             return
-        # remove the old accessed times and increase it by 1
+        # remove the old access frequency and increase it by 1
         times = self.times_map[key]
         del self.nodes_map[times][key]
         self._update_map(key, self.times_map[key] + 1)
 
-        # if there is no nodes with minimum accessed times, increase it by 1
+        # if there is no nodes with minimum access frequency, increase it by 1
         if not self.nodes_map[times] and times == self.min_accessed_times:
             self.min_accessed_times += 1
 
@@ -58,5 +58,5 @@ class LFUCacheAlgorithm(object):
         text = ''
         for k in keys:
             text += str(k) + '(' + str(self.times_map[k]) + ') '
-        text += ' (Min accessed times: ' + str(self.min_accessed_times) + ')'
+        text += ' (Min access frequency: ' + str(self.min_accessed_times) + ')'
         print(text)

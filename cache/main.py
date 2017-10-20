@@ -34,8 +34,8 @@ def test_lfu():
     for _ in range(0, 2):
         cache.get(3) # 1(1) 3(2) 4(3)
 
-    cache.put(5, 0) # 3(2) 4(3) 5(0)
-    cache.put(5, 0) # 3(2) 4(3) 5(1)
+    for _ in range(0, 2):
+        cache.put(5, 0) # 3(2) 4(3) 5(1)
     algorithm.log()
     assert cache.get(1) is None
 
