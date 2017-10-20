@@ -1,11 +1,12 @@
 from cache import Cache
-from lru_cache import LRUCacheAlgorithm
+from lru import LRUCacheAlgorithm
 
 def main():
     algorithm = LRUCacheAlgorithm(max_item=3)
     cache = Cache(algorithm=algorithm)
 
     cache.put(1, 0) # 1
+    cache.get(1)
     cache.put(2, 0) # 1 2
     cache.put(3, 0) # 1 2 3
     algorithm.index_list.log()
