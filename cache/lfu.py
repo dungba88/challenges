@@ -7,15 +7,22 @@ class LFUCacheAlgorithm(object):
         self.nodes_map = dict()
         self.target = None
 
+    def _update_map(self, key, times):
+        """update times and nodes map with new times value"""
+        self.times_map[key] = times
+        if times not in self.nodes_map:
+            self.nodes_map[times] = dict()
+        self.nodes_map[times][key] = 1
+
     def on_get(self, key):
         if key not in self.times_map:
             return
+        # remove the old accessed times and increase it by 1
         times = self.times_map[key]
         del self.nodes_map[times][key]
-        self.times_map[key] += 1
-        if (times + 1) not in self.nodes_map:
-            self.nodes_map[times + 1] = dict()
-        self.nodes_map[times + 1][key] = 1
+        self._update_map(key, self.times_map[key] + 1)
+
+        # if there is no nodes with minimum accessed times, increase it by 1
         if not self.nodes_map[times] and times == self.min_accessed_times:
             self.min_accessed_times += 1
 
@@ -25,10 +32,7 @@ class LFUCacheAlgorithm(object):
             return
         if len(self.target.data) >= self.max_item:
             self._evict()
-        self.times_map[key] = 0
-        if 0 not in self.nodes_map:
-            self.nodes_map[0] = dict()
-        self.nodes_map[0][key] = 1
+        self._update_map(key, 0)
         self.min_accessed_times = 0
 
     def _evict(self):
