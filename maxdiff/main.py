@@ -1,5 +1,8 @@
 def main():
     inputs = [
+        [],
+        [1],
+        [1, 2],
         [4, 7, 1, 3, 2, 9],
         [1, 2, 3, 4, 5, 6],
         [4, 3, 2, 1],
@@ -8,6 +11,9 @@ def main():
         [4, 1, 3, 9, 2, -2, 3]
     ]
     outputs = [
+        -1,
+        -1,
+        1,
         8,
         5,
         -1,
@@ -20,6 +26,8 @@ def main():
         assert maxdiff(inputs[i]) == outputs[i]
 
 def maxdiff(a):
+    if len(a) < 2:
+        return -1
     cur_max = -1
     cur_diff = 0
 
