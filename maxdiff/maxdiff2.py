@@ -1,6 +1,4 @@
 def maxdiff(a):
-    if len(a) < 2:
-        return -1
     cur_max = -1
     max_value = None
     for i in reversed(range(len(a))):
