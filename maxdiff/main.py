@@ -36,8 +36,7 @@ def maxdiff(a):
     for i in range(len(diffs) - 1):
         item = diffs[i]
         if item < 0:
-            # don't care about negative items
-            # since that means a[i] > a[i + 1]
+            # don't care about down slope
             continue
 
         cur_diff += item
