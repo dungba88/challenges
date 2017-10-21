@@ -39,12 +39,12 @@ def maxdiff(a):
             # don't care about negative items
             # since that means a[i] > a[i + 1]
             continue
-        next_item = diffs[i + 1]
 
         cur_diff += item
         if cur_diff > cur_max:
             cur_max = cur_diff
 
+        next_item = diffs[i + 1]
         cur_diff += next_item
         # if the next down slope is too high
         # that means we should skip the current up slope
