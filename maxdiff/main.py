@@ -28,8 +28,8 @@ def main():
 def maxdiff(a):
     if len(a) < 2:
         return -1
-    cur_max = -1
-    cur_diff = 0
+    cur_max = -1 # maximum value so far
+    cur_diff = 0 # up slope accumulation so far
 
     diffs = convert_to_diffs(a)
 
@@ -44,10 +44,10 @@ def maxdiff(a):
         if cur_diff > cur_max:
             cur_max = cur_diff
 
-        next_item = diffs[i + 1]
-        cur_diff += next_item
+        cur_diff += diffs[i + 1]
         # if the next down slope is too high
-        # that means we should skip the current up slope
+        # that means we should skip the current up
+        # slope accumulation
         if cur_diff < 0:
             cur_diff = 0
 
