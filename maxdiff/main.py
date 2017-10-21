@@ -55,14 +55,14 @@ def maxdiff(a):
     return cur_max
 
 def convert_to_diffs(a):
-    """
+    '''
     convert the array into array of up-and-down slopes
     if the items are continously increase or decrease,
     they will be grouped together
 
     an array of [1, 3, 2] will be converted into [2, -1]
     while an array of [1, 2, 3] will be converted into [2]
-    """
+    '''
     diffs = []
     cur_sign = 0
     cur_acc = 0
