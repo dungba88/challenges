@@ -5,7 +5,7 @@ def main():
         ["ADOBECODEBANC", "ABC", "BANC"],
         ["ADOBECODEBANC", "ABBC", "BECODEBA"],
         ["ABC", "A", "A"],
-        ["ABC", "X", None],
+        ["ABC", "AAC", None],
         ["AXXBXBXAXXAC", "AB", "BXA"],
     ]
 
