@@ -2,6 +2,7 @@ import math
 
 def min_window(s, t):
     n = len(s)
+    collected = 0
 
     cur_min_head = None
     cur_min = math.inf
@@ -9,7 +10,8 @@ def min_window(s, t):
     fulfilled_map = {}
     required_map = {}
     for c in t:
-        fulfilled_map[c] = 1
+        if c not in required_map:
+            collected += 1
         required_map[c] = 1 if c not in required_map else required_map[c] + 1
 
     i = j = 0
@@ -22,8 +24,8 @@ def min_window(s, t):
             last_j = j
             required_map[tail] -= 1
             if required_map[tail] == 0:
-                del fulfilled_map[tail]
-        if fulfilled_map:
+                collected -= 1
+        if collected > 0:
             j += 1
         else:
             if cur_min > j - i:
@@ -32,7 +34,7 @@ def min_window(s, t):
             if head in required_map:
                 required_map[head] += 1
                 if required_map[head] > 0:
-                    fulfilled_map[head] = 1
+                    collected += 1
             i += 1
 
     if cur_min == math.inf:
