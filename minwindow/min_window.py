@@ -2,17 +2,14 @@ import math
 
 def min_window(s, t):
     n = len(s)
-    collected = 0
 
     cur_min_head = None
     cur_min = math.inf
 
-    fulfilled_map = {}
     required_map = {}
     for c in t:
-        if c not in required_map:
-            collected += 1
         required_map[c] = 1 if c not in required_map else required_map[c] + 1
+    collected = len(required_map)
 
     i = j = 0
     last_j = -1
