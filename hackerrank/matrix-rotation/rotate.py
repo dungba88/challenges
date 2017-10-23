@@ -41,14 +41,9 @@ def __rotate_layers(disassembles, rotations):
     return assembles
 
 def __assemble(assembles, rows, cols):
-    matrix = []
     size = int(min(rows, cols) / 2)
 
-    for _ in range(rows):
-        row = []
-        for _ in range(cols):
-            row.append(0)
-        matrix.append(row)
+    matrix = __create_empty_matrix(rows, cols)
 
     for i in range(size):
         layer = assembles[i]
@@ -69,4 +64,13 @@ def __assemble(assembles, rows, cols):
         for k in reversed(range(i+1, rows-i-1)):
             matrix[k][i] = layer[j]
             j += 1
+    return matrix
+
+def __create_empty_matrix(rows, cols):
+    matrix = []
+    for _ in range(rows):
+        row = []
+        for _ in range(cols):
+            row.append(0)
+        matrix.append(row)
     return matrix
