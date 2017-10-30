@@ -27,7 +27,7 @@ public class RingBuffer {
 			prop = propRef.get();
 			nextProp = prop.nextEnqueue();
 		} while(nextProp != null && !propRef.compareAndSet(prop, nextProp));
-		// check if queue is empty
+		// check if queue is full
 		if (nextProp == null) return;
 		data[(nextProp.getStart() + nextProp.getLength()) & (data.length - 1)] = number;
 	}
