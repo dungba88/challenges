@@ -1,22 +1,18 @@
-package japa;
-
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class RingBuffer {
 
 	private volatile int[] data;
 	
-	private AtomicInteger start;
-	
-	private AtomicInteger end;
+	private AtomicReference<RingBufferProp> propRef;
 	
 	public RingBuffer(int maximumSize) {
 		if (!isPowerOf2(maximumSize)) {
 			throw new RuntimeException("Maximum size must be power of 2");
 		}
 		data = new int[maximumSize];
-		start = new AtomicInteger(0);
-		end = new AtomicInteger(0);
+		propRef = new AtomicReference<RingBufferProp>(new RingBufferProp(0, 0, data.length));
 	}
 	
 	private boolean isPowerOf2(int maximumSize) {
@@ -24,31 +20,63 @@ public class RingBuffer {
 	}
 
 	public void enqueue(int number) {
-		int endIdx = -1;
-		int startIdx = start.get();
-		// increase the endIdx atomically
+		RingBufferProp prop = null;
+		RingBufferProp nextProp = null;
+		// increase the length atomically
 		do {
-			endIdx = end.get();
-		} while (endIdx - startIdx < data.length && !end.compareAndSet(endIdx, endIdx + 1));
-		// check if queue is full
-		if (endIdx - startIdx >= data.length)
-			return;
-		data[endIdx & (data.length - 1)] = number;
+			prop = propRef.get();
+			nextProp = prop.nextEnqueue();
+		} while(nextProp != null && !propRef.compareAndSet(prop, nextProp));
+		// check if queue is empty
+		if (nextProp == null) return;
+		data[(nextProp.getStart() + nextProp.getLength()) & (data.length - 1)] = number;
 	}
 	
 	public Integer dequeue() {
-		int endIdx = end.get();
-		int startIdx = -1;
-		// increase the startIdx atomically
+		RingBufferProp prop = null;
+		RingBufferProp nextProp = null;
+		// increase the startIdx and length atomically
 		do {
-			startIdx = start.get();
-		} while(startIdx < endIdx && !start.compareAndSet(startIdx, startIdx + 1));
+			prop = propRef.get();
+			nextProp = prop.nextDequeue();
+		} while(nextProp != null && !propRef.compareAndSet(prop, nextProp));
 		// check if queue is empty
-		if (startIdx >= endIdx) return null;
-		return data[startIdx & (data.length - 1)];
+		if (nextProp == null) return null;
+		return data[nextProp.getStart()];
+	}
+}
+
+class RingBufferProp {
+	
+	private int start;
+	
+	private int length;
+	
+	private int maxSize;
+	
+	public RingBufferProp(int start, int length, int maxSize) {
+		this.start = start;
+		this.length = length;
+		this.maxSize = maxSize;
 	}
 	
-	public int size() {
-		return end.get() - start.get();
+	public RingBufferProp nextDequeue() {
+		if (length <= 0)
+			return null;
+		return new RingBufferProp((start + 1) & (maxSize - 1), length - 1, maxSize);
+	}
+
+	public RingBufferProp nextEnqueue() {
+		if (length >= maxSize)
+			return null;
+		return new RingBufferProp(start, length + 1, maxSize);
+	}
+
+	public int getStart() {
+		return start;
+	}
+	
+	public int getLength() {
+		return length;
 	}
 }
