@@ -7,16 +7,13 @@ public class ConcurrentLinkedList {
 	private AtomicReference<ConcurrentNode> tail;
 
 	public ConcurrentLinkedList() {
-		ConcurrentNode startNode = new ConcurrentNode(null, true);
+		ConcurrentNode startNode = new ConcurrentNode(null);
 		head = new AtomicReference<>(startNode);
 		tail = new AtomicReference<>(startNode);
 	}
 	
 	public void enqueue(Integer data) {
-		if (data == null)
-			throw new NullPointerException("data cannot be null");
-		
-		ConcurrentNode node = new ConcurrentNode(data, false);
+		ConcurrentNode node = new ConcurrentNode(data);
 		ConcurrentNode curTail = tail.getAndSet(node);
 		curTail.setNext(node);
 	}
@@ -41,17 +38,10 @@ class ConcurrentNode {
 	
 	private Integer data;
 	
-	public volatile boolean startNode;
-	
 	private volatile ConcurrentNode next;
 	
-	public ConcurrentNode(Integer data, boolean startNode) {
+	public ConcurrentNode(Integer data) {
 		this.data = data;
-		this.startNode = startNode;
-	}
-	
-	public boolean isStartNode() {
-		return startNode;
 	}
 	
 	public Integer getData() {
