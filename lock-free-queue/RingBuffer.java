@@ -26,9 +26,11 @@ public class RingBuffer {
 	public void enqueue(int number) {
 		int endIdx = -1;
 		int startIdx = start.get();
+		// increase the endIdx atomically
 		do {
 			endIdx = end.get();
 		} while (endIdx - startIdx < data.length && !end.compareAndSet(endIdx, endIdx + 1));
+		// check if queue is full
 		if (endIdx - startIdx >= data.length)
 			return;
 		data[endIdx & (data.length - 1)] = number;
@@ -37,9 +39,11 @@ public class RingBuffer {
 	public Integer dequeue() {
 		int endIdx = end.get();
 		int startIdx = -1;
+		// increase the startIdx atomically
 		do {
 			startIdx = start.get();
 		} while(startIdx < endIdx && !start.compareAndSet(startIdx, startIdx + 1));
+		// check if queue is empty
 		if (startIdx >= endIdx) return null;
 		return data[startIdx & (data.length - 1)];
 	}
