@@ -1,26 +1,26 @@
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ConcurrentLinkedList {
+public class ConcurrentLinkedList<T> {
 	
-	private AtomicReference<ConcurrentNode> head;
+	private AtomicReference<ConcurrentNode<T>> head;
 
-	private AtomicReference<ConcurrentNode> tail;
+	private AtomicReference<ConcurrentNode<T>> tail;
 
 	public ConcurrentLinkedList() {
-		ConcurrentNode startNode = new ConcurrentNode(null);
+		ConcurrentNode<T> startNode = new ConcurrentNode<T>(null);
 		head = new AtomicReference<>(startNode);
 		tail = new AtomicReference<>(startNode);
 	}
 	
-	public void enqueue(Integer data) {
-		ConcurrentNode node = new ConcurrentNode(data);
-		ConcurrentNode curTail = tail.getAndSet(node);
+	public void enqueue(T data) {
+		ConcurrentNode<T> node = new ConcurrentNode<T>(data);
+		ConcurrentNode<T> curTail = tail.getAndSet(node);
 		curTail.setNext(node);
 	}
 	
-	public Integer dequeue() {
-		ConcurrentNode headNode = null;
-		ConcurrentNode nextNode = null;
+	public T dequeue() {
+		ConcurrentNode<T> headNode = null;
+		ConcurrentNode<T> nextNode = null;
 		
 		while(true) {
 			headNode = head.get();
@@ -34,25 +34,25 @@ public class ConcurrentLinkedList {
 	}
 }
 
-class ConcurrentNode {
+class ConcurrentNode<T> {
 	
-	private Integer data;
+	private T data;
 	
-	private volatile ConcurrentNode next;
+	private volatile ConcurrentNode<T> next;
 	
-	public ConcurrentNode(Integer data) {
+	public ConcurrentNode(T data) {
 		this.data = data;
 	}
 	
-	public Integer getData() {
+	public T getData() {
 		return data;
 	}
 
-	public ConcurrentNode getNext() {
+	public ConcurrentNode<T> getNext() {
 		return next;
 	}
 
-	public void setNext(ConcurrentNode next) {
+	public void setNext(ConcurrentNode<T> next) {
 		this.next = next;
 	}
 }
