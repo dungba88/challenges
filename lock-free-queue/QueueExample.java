@@ -6,15 +6,17 @@ public class QueueExample {
 	public static void main(String[] args) {
 		RingBuffer buffer = new RingBuffer(1024);
 		
-		int noThreads = 7;
-		int noItems = 1000000;
+		int noThreads = 3;
+		int noItems = 10000000;
 		
 		ConsumerThread[] consumers = new ConsumerThread[noThreads];
 		for(int i=0; i<consumers.length; i++) {
 			consumers[i] = new ConsumerThread(buffer);
-			consumers[i].setPriority(Thread.MAX_PRIORITY);
+			//consumers[i].setPriority(Thread.MAX_PRIORITY);
 			consumers[i].start();
 		}
+		
+		long start = System.nanoTime();
 		
 		for(int i=0; i<noItems; i++) {
 			buffer.enqueue(i);
@@ -24,7 +26,8 @@ public class QueueExample {
 			// Thread.onSpinWait();
 		}
 		
-		System.out.println("finish all");
+		System.out.println("finish all at " + (System.nanoTime() - start)/1000000 + "ms");
+		start = System.nanoTime();
 		
 		for(int i=0; i<consumers.length; i++) {
 			consumers[i].cancel();
@@ -37,18 +40,15 @@ public class QueueExample {
 			}
 		}
 		
-		List<Integer> counters = new ArrayList<Integer>();
-		for(int i=0; i<consumers.length; i++) {
-			counters.add(consumers[i].getCounter());
-			System.out.println(consumers[i].getCounter());
-		}
-		assert counters.stream().reduce((a, b)->(a+b)).orElse(0) == noItems;
+		System.out.println("all threads stopped at " + (System.nanoTime() - start)/1000000 + "ms");
 	}
 }
 
 class ConsumerThread extends Thread {
 	
 	private RingBuffer buffer;
+	
+	private List<Integer> list = new ArrayList<>();
 	
 	private int counter = 0;
 
@@ -63,12 +63,16 @@ class ConsumerThread extends Thread {
 				// Thread.onSpinWait();
 			}
 			Integer item = buffer.dequeue();
-			if (item != null) counter++;
+			//if (item != null) counter++;
 		}
 	}
 	
 	public void cancel() {
 		interrupt();
+	}
+	
+	public List<Integer> getList() {
+		return list;
 	}
 	
 	public int getCounter() {
