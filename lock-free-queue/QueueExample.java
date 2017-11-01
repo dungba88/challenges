@@ -1,24 +1,21 @@
-import java.util.concurrent.CountDownLatch;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QueueExample {
 
 	public static void main(String[] args) {
 		RingBuffer buffer = new RingBuffer(1024);
 		
-		int noThreads = 8;
-		CountDownLatch startSignal = new CountDownLatch(1);
+		int noThreads = 7;
+		int noItems = 1000000;
+		
 		ConsumerThread[] consumers = new ConsumerThread[noThreads];
 		for(int i=0; i<consumers.length; i++) {
-			consumers[i] = new ConsumerThread(startSignal, buffer);
-		}
-		
-		for(int i=0; i<consumers.length; i++) {
+			consumers[i] = new ConsumerThread(buffer);
 			consumers[i].start();
 		}
 		
-		startSignal.countDown();
-		
-		for(int i=0; i<1000; i++) {
+		for(int i=0; i<noItems; i++) {
 			buffer.enqueue(i);
 		}
 		
@@ -39,9 +36,12 @@ public class QueueExample {
 			}
 		}
 		
+		List<Integer> counters = new ArrayList<Integer>();
 		for(int i=0; i<consumers.length; i++) {
+			counters.add(consumers[i].getCounter());
 			System.out.println(consumers[i].getCounter());
 		}
+		assert counters.stream().reduce((a, b)->(a+b)).orElse(0) == noItems;
 	}
 }
 
@@ -49,22 +49,14 @@ class ConsumerThread extends Thread {
 	
 	private RingBuffer buffer;
 	
-	private CountDownLatch startSignal;
-	
 	private int counter = 0;
 
-	public ConsumerThread(CountDownLatch startSignal, RingBuffer buffer) {
-		this.startSignal = startSignal;
+	public ConsumerThread(RingBuffer buffer) {
 		this.buffer = buffer;
 	}
 	
 	@Override
 	public void run() {
-		try {
-			startSignal.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		while(!Thread.currentThread().isInterrupted()) {
 			while(!Thread.currentThread().isInterrupted() && buffer.empty()) {
 				// Thread.onSpinWait();
