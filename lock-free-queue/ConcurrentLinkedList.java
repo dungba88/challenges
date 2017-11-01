@@ -1,6 +1,6 @@
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ConcurrentLinkedList<T> {
+public class ConcurrentLinkedList<T> implements LockFreeQueue<T> {
 	
 	private AtomicReference<ConcurrentNode<T>> head;
 
@@ -31,6 +31,10 @@ public class ConcurrentLinkedList<T> {
 		
 		if (nextNode == null) return null;
 		return nextNode.getData();
+	}
+	
+	public boolean empty() {
+		return head.get().getNext() == null;
 	}
 }
 
