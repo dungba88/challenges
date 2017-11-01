@@ -69,6 +69,7 @@ class SpinLock {
 	}
 
 	public void unlock() {
-		lock.set(null);
+		Thread callingThread = Thread.currentThread();
+		lock.compareAndSet(callingThread, null);
 	}
 }
