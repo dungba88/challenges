@@ -58,8 +58,8 @@ class ConsumerThread extends Thread {
 	
 	@Override
 	public void run() {
-		while(!Thread.interrupted()) {
-			while(!Thread.interrupted() && buffer.empty()) {
+		while(!Thread.currentThread().isInterrupted()) {
+			while(!Thread.currentThread().isInterrupted() && buffer.empty()) {
 				// Thread.onSpinWait();
 			}
 			Integer item = buffer.dequeue();
