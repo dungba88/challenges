@@ -1,18 +1,21 @@
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RingBuffer {
 
 	private volatile int[] data;
 	
-	private AtomicReference<RingBufferProp> propRef;
+	private volatile int start;
+	
+	private volatile int length;
+	
+	private SpinLock lock = new SpinLock();
 	
 	public RingBuffer(int maximumSize) {
 		if (!isPowerOf2(maximumSize)) {
 			throw new RuntimeException("Maximum size must be power of 2");
 		}
 		data = new int[maximumSize];
-		propRef = new AtomicReference<RingBufferProp>(new RingBufferProp(0, 0, data.length));
+		start = length = 0;
 	}
 	
 	private boolean isPowerOf2(int maximumSize) {
@@ -20,63 +23,52 @@ public class RingBuffer {
 	}
 
 	public void enqueue(int number) {
-		RingBufferProp prop = null;
-		RingBufferProp nextProp = null;
-		// increase the length atomically
-		do {
-			prop = propRef.get();
-			nextProp = prop.nextEnqueue();
-		} while(nextProp != null && !propRef.compareAndSet(prop, nextProp));
-		// check if queue is full
-		if (nextProp == null) return;
-		data[(nextProp.getStart() + nextProp.getLength()) & (data.length - 1)] = number;
+		lock.lock();
+		try {
+			if (full()) return;
+			int idx = start + length++;
+			data[mask(idx)] = number;
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public Integer dequeue() {
+		lock.lock();
+		try {
+			if (empty()) return null;
+			int result = data[start];
+			start = mask(start + 1);
+			length--;
+			return result;
+		} finally {
+			lock.unlock();
+		}
 	}
 	
-	public Integer dequeue() {
-		RingBufferProp prop = null;
-		RingBufferProp nextProp = null;
-		// increase the startIdx and length atomically
-		do {
-			prop = propRef.get();
-			nextProp = prop.nextDequeue();
-		} while(nextProp != null && !propRef.compareAndSet(prop, nextProp));
-		// check if queue is empty
-		if (nextProp == null) return null;
-		return data[nextProp.getStart()];
+	public boolean full() {
+		return length == data.length;
+	}
+
+	public boolean empty() {
+		return length == 0;
+	}
+	
+	private int mask(int i) {
+		return i & (data.length - 1);
 	}
 }
 
-class RingBufferProp {
+class SpinLock {
+
+	private AtomicReference<Thread> lock = new AtomicReference<Thread>(null);
 	
-	private int start;
-	
-	private int length;
-	
-	private int maxSize;
-	
-	public RingBufferProp(int start, int length, int maxSize) {
-		this.start = start;
-		this.length = length;
-		this.maxSize = maxSize;
-	}
-	
-	public RingBufferProp nextDequeue() {
-		if (length <= 0)
-			return null;
-		return new RingBufferProp((start + 1) & (maxSize - 1), length - 1, maxSize);
+	public void lock() {
+		Thread callingThread = Thread.currentThread();
+		while(!lock.compareAndSet(null, callingThread)) {}
 	}
 
-	public RingBufferProp nextEnqueue() {
-		if (length >= maxSize)
-			return null;
-		return new RingBufferProp(start, length + 1, maxSize);
-	}
-
-	public int getStart() {
-		return start;
-	}
-	
-	public int getLength() {
-		return length;
+	public void unlock() {
+		lock.set(null);
 	}
 }
