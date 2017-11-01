@@ -7,7 +7,7 @@ public class QueueExample {
 		RingBuffer buffer = new RingBuffer(1024);
 		
 		int noThreads = 7;
-		int noItems = 1000000;
+		int noItems = 1000;
 		
 		ConsumerThread[] consumers = new ConsumerThread[noThreads];
 		for(int i=0; i<consumers.length; i++) {
@@ -58,8 +58,8 @@ class ConsumerThread extends Thread {
 	
 	@Override
 	public void run() {
-		while(!Thread.currentThread().isInterrupted()) {
-			while(!Thread.currentThread().isInterrupted() && buffer.empty()) {
+		while(!Thread.interrupted()) {
+			while(!Thread.interrupted() && buffer.empty()) {
 				// Thread.onSpinWait();
 			}
 			Integer item = buffer.dequeue();
