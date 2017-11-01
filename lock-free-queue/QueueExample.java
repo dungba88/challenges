@@ -12,6 +12,7 @@ public class QueueExample {
 		ConsumerThread[] consumers = new ConsumerThread[noThreads];
 		for(int i=0; i<consumers.length; i++) {
 			consumers[i] = new ConsumerThread(buffer);
+			consumers[i].setPriority(Thread.MAX_PRIORITY);
 			consumers[i].start();
 		}
 		
