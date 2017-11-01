@@ -1,11 +1,19 @@
 public class QueueExample {
 
 	public static void main(String[] args) {
+		LockFreeQueue<Integer> buffer = new RingBuffer<>(1048576);
 		LockFreeQueue<Integer> queue = new ConcurrentLinkedList<>();
+		LockFreeQueue<Integer> javaQueue = new ConcurrentLinkedQueueWrapper<>();
 		
 		int noThreads = 3;
 		int noItems = 10000000;
 		
+		test(noThreads, noItems, buffer);
+		test(noThreads, noItems, queue);
+		test(noThreads, noItems, javaQueue);
+	}
+
+	private static void test(int noThreads, int noItems, LockFreeQueue<Integer>queue) {
 		ConsumerThread[] consumers = new ConsumerThread[noThreads];
 		for(int i=0; i<consumers.length; i++) {
 			consumers[i] = new ConsumerThread(queue);
@@ -16,11 +24,11 @@ public class QueueExample {
 		long start = System.nanoTime();
 		
 		for(int i=0; i<noItems; i++) {
-			queue.enqueue(i);
+			queue.add(i);
 		}
 		
-		while(!queue.empty()) {
-			// Thread.onSpinWait();
+		while(!queue.isEmpty()) {
+			Thread.onSpinWait();
 		}
 		
 		long elapsed = (System.nanoTime() - start) / 1000000;
@@ -58,10 +66,10 @@ class ConsumerThread extends Thread {
 	@Override
 	public void run() {
 		while(!Thread.currentThread().isInterrupted()) {
-			while(!Thread.currentThread().isInterrupted() && queue.empty()) {
-				// Thread.onSpinWait();
+			while(!Thread.currentThread().isInterrupted() && queue.isEmpty()) {
+				Thread.onSpinWait();
 			}
-			queue.dequeue();
+			queue.poll();
 			//if (item != null) counter++;
 		}
 	}

@@ -1,9 +1,9 @@
 
 public interface LockFreeQueue<T> {
 
-	public void enqueue(T item);
+	public void add(T item);
 	
-	public T dequeue();
+	public T poll();
 	
-	public boolean empty();
+	public boolean isEmpty();
 }

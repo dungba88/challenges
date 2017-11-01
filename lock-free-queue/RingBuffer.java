@@ -22,10 +22,11 @@ public class RingBuffer<T> implements LockFreeQueue<T> {
 		return (maximumSize & (maximumSize - 1)) == 0;
 	}
 
-	public void enqueue(T number) {
+	public void add(T number) {
+		if (isFull()) return;
 		lock.lock();
 		try {
-			if (full()) return;
+			if (isFull()) return;
 			int idx = start + length++;
 			data[mask(idx)] = number;
 		} finally {
@@ -33,10 +34,11 @@ public class RingBuffer<T> implements LockFreeQueue<T> {
 		}
 	}
 
-	public T dequeue() {
+	public T poll() {
+		if (isEmpty()) return null;
 		lock.lock();
 		try {
-			if (empty()) return null;
+			if (isEmpty()) return null;
 			T result = (T)data[start];
 			start = mask(start + 1);
 			length--;
@@ -46,11 +48,11 @@ public class RingBuffer<T> implements LockFreeQueue<T> {
 		}
 	}
 	
-	public boolean full() {
+	public boolean isFull() {
 		return length == data.length;
 	}
 
-	public boolean empty() {
+	public boolean isEmpty() {
 		return length == 0;
 	}
 	
@@ -69,6 +71,7 @@ class SpinLock {
 	}
 
 	public void unlock() {
-		lock.set(null);
+		Thread callingThread = Thread.currentThread();
+		lock.compareAndSet(callingThread, null);
 	}
 }

@@ -12,13 +12,13 @@ public class ConcurrentLinkedList<T> implements LockFreeQueue<T> {
 		tail = new AtomicReference<>(startNode);
 	}
 	
-	public void enqueue(T data) {
+	public void add(T data) {
 		ConcurrentNode<T> node = new ConcurrentNode<T>(data);
 		ConcurrentNode<T> curTail = tail.getAndSet(node);
 		curTail.setNext(node);
 	}
 	
-	public T dequeue() {
+	public T poll() {
 		ConcurrentNode<T> headNode = null;
 		ConcurrentNode<T> nextNode = null;
 		
@@ -33,7 +33,7 @@ public class ConcurrentLinkedList<T> implements LockFreeQueue<T> {
 		return nextNode.getData();
 	}
 	
-	public boolean empty() {
+	public boolean isEmpty() {
 		return head.get().getNext() == null;
 	}
 }
