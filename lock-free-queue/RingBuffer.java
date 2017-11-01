@@ -19,7 +19,7 @@ public class RingBuffer {
 	}
 	
 	private boolean isPowerOf2(int maximumSize) {
-		return (maximumSize & (maximumSize - 1)) == 0;
+		return mask(maximumSize) == 0;
 	}
 
 	public void enqueue(int number) {
