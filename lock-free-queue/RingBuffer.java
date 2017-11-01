@@ -26,8 +26,7 @@ public class RingBuffer {
 		lock.lock();
 		try {
 			if (full()) return;
-			int idx = start + length++;
-			data[mask(idx)] = number;
+			data[mask(start + length++)] = number;
 		} finally {
 			lock.unlock();
 		}
