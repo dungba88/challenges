@@ -7,7 +7,7 @@ public class QueueExample {
 		RingBuffer buffer = new RingBuffer(1024);
 		
 		int noThreads = 7;
-		int noItems = 1000;
+		int noItems = 1000000;
 		
 		ConsumerThread[] consumers = new ConsumerThread[noThreads];
 		for(int i=0; i<consumers.length; i++) {
