@@ -2,7 +2,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConcurrentLinkedQueueWrapper<T> implements LockFreeQueue<T> {
 
-    private ConcurrentLinkedQueue<T> queue = new ConcurrentLinkedQueue<>();
+	private ConcurrentLinkedQueue<T> queue = new ConcurrentLinkedQueue<>();
 
 	public ConcurrentLinkedQueueWrapper() {
 		
