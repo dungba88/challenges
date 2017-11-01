@@ -11,9 +11,8 @@ public class RingBuffer {
 	private SpinLock lock = new SpinLock();
 	
 	public RingBuffer(int maximumSize) {
-		if (!isPowerOf2(maximumSize)) {
+		if (!isPowerOf2(maximumSize))
 			throw new RuntimeException("Maximum size must be power of 2");
-		}
 		data = new int[maximumSize];
 		start = length = 0;
 	}
