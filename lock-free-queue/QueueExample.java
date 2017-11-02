@@ -1,7 +1,7 @@
 public class QueueExample {
 
 	public static void main(String[] args) {
-		LockFreeQueue<Integer> buffer = new RingBuffer<>(1048576);
+		LockFreeQueue buffer = new RingBuffer(1024);
 		LockFreeQueue<Integer> queue = new ConcurrentLinkedList<>();
 		LockFreeQueue<Integer> javaQueue = new ConcurrentLinkedQueueWrapper<>();
 		
@@ -24,7 +24,7 @@ public class QueueExample {
 		long start = System.nanoTime();
 		
 		for(int i=0; i<noItems; i++) {
-			queue.add(i);
+			while (!queue.add(i)) { }
 		}
 		
 		while(!queue.isEmpty()) {

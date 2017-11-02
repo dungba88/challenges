@@ -1,7 +1,7 @@
 
 public interface LockFreeQueue<T> {
 
-	public void add(T item);
+	public boolean add(T item);
 	
 	public T poll();
 	

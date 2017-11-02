@@ -8,8 +8,9 @@ public class ConcurrentLinkedQueueWrapper<T> implements LockFreeQueue<T> {
 		
 	}
 	
-	public void add(T data) {
+	public boolean add(T data) {
 		queue.add(data);
+		return true;
 	}
 	
 	public T poll() {

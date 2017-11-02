@@ -1,8 +1,8 @@
 import java.util.concurrent.atomic.AtomicReference;
 
-public class RingBuffer<T> implements LockFreeQueue<T> {
+public class RingBuffer implements LockFreeQueue<Integer> {
 
-	private volatile Object[] data;
+	private volatile int[] data;
 	
 	private volatile int start;
 	
@@ -14,7 +14,7 @@ public class RingBuffer<T> implements LockFreeQueue<T> {
 		if (!isPowerOf2(maximumSize)) {
 			throw new RuntimeException("Maximum size must be power of 2");
 		}
-		data = new Object[maximumSize];
+		data = new int[maximumSize];
 		start = length = 0;
 	}
 	
@@ -22,24 +22,24 @@ public class RingBuffer<T> implements LockFreeQueue<T> {
 		return (maximumSize & (maximumSize - 1)) == 0;
 	}
 
-	public void add(T number) {
-		if (isFull()) return;
+	public boolean add(Integer number) {
+		if (isFull()) return false;
 		lock.lock();
 		try {
-			if (isFull()) return;
-			int idx = start + length++;
-			data[mask(idx)] = number;
+			if (isFull()) return false;
+			data[mask(start + length++)] = number;
 		} finally {
 			lock.unlock();
 		}
+		return true;
 	}
 
-	public T poll() {
+	public Integer poll() {
 		if (isEmpty()) return null;
 		lock.lock();
 		try {
 			if (isEmpty()) return null;
-			T result = (T)data[start];
+			int result = data[start];
 			start = mask(start + 1);
 			length--;
 			return result;
