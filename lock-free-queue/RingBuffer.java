@@ -1,4 +1,4 @@
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RingBuffer implements LockFreeQueue<Integer> {
 
@@ -8,7 +8,9 @@ public class RingBuffer implements LockFreeQueue<Integer> {
 	
 	private volatile int length;
 	
-	private SpinLock lock = new SpinLock();
+//	private SpinLock lock = new SpinLock();
+	
+	private AtomicBoolean lock = new AtomicBoolean(false);
 	
 	public RingBuffer(int maximumSize) {
 		if (!isPowerOf2(maximumSize)) {
@@ -24,19 +26,22 @@ public class RingBuffer implements LockFreeQueue<Integer> {
 
 	public boolean add(Integer number) {
 		if (isFull()) return false;
-		lock.lock();
+//		lock.lock();
+		while(!lock.compareAndSet(false, true)) {}
 		try {
 			if (isFull()) return false;
 			data[mask(start + length++)] = number;
 		} finally {
-			lock.unlock();
+//			lock.unlock();
+			lock.set(false);
 		}
 		return true;
 	}
 
 	public Integer poll() {
 		if (isEmpty()) return null;
-		lock.lock();
+//		lock.lock();
+		while(!lock.compareAndSet(false, true)) {}
 		try {
 			if (isEmpty()) return null;
 			int result = data[start];
@@ -44,7 +49,8 @@ public class RingBuffer implements LockFreeQueue<Integer> {
 			length--;
 			return result;
 		} finally {
-			lock.unlock();
+//			lock.unlock();
+			lock.set(false);
 		}
 	}
 	
@@ -57,21 +63,21 @@ public class RingBuffer implements LockFreeQueue<Integer> {
 	}
 	
 	private int mask(int i) {
+		if (i < data.length)
+			return i;
 		return i & (data.length - 1);
 	}
 }
 
 class SpinLock {
 
-	private AtomicReference<Thread> lock = new AtomicReference<Thread>(null);
+	private AtomicBoolean lock = new AtomicBoolean(false);
 	
 	public void lock() {
-		Thread callingThread = Thread.currentThread();
-		while(!lock.compareAndSet(null, callingThread)) {}
+		while(!lock.compareAndSet(false, true)) {}
 	}
 
 	public void unlock() {
-		Thread callingThread = Thread.currentThread();
-		lock.compareAndSet(callingThread, null);
+		lock.set(false);
 	}
 }
