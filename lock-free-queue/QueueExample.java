@@ -2,6 +2,7 @@ public class QueueExample {
 	
 		public static void main(String[] args) {
 			LockFreeQueue<Integer> buffer = new SPSCRingBuffer(1024 * 1024 * 16);
+			LockFreeQueue<Integer> unsafeBuffer = new UnsafeSPSCRingBuffer(1024 * 1024 * 16);
 	//		LockFreeQueue<Integer> queue = new ConcurrentLinkedList<>();
 	//		LockFreeQueue<Integer> javaQueue = new ConcurrentLinkedQueueWrapper<>();
 	
@@ -9,7 +10,10 @@ public class QueueExample {
 			int noItems = 10000000;
 			
 			for(int i=0; i<10; i++) {
+				System.out.println("Testing Safe");
 				test(noThreads, noItems, buffer);
+				System.out.println("Testing Unsafe");
+				test(noThreads, noItems, unsafeBuffer);
 			}
 	//		test(noThreads, noItems, queue);
 	//		test(noThreads, noItems, javaQueue);
@@ -23,7 +27,7 @@ public class QueueExample {
 				consumers[i].start();
 			}
 			
-			long start = System.currentTimeMillis();
+			long start = System.nanoTime();
 			
 			for(int i=0; i<noItems; i++) {
 				while (!queue.add(i)) { }
@@ -33,10 +37,10 @@ public class QueueExample {
 				Thread.onSpinWait();
 			}
 			
-			long elapsed = (System.currentTimeMillis() - start);
-			long pace = (long)noItems * 1000 / elapsed;
+			long elapsed = (System.nanoTime() - start);
+			long pace = (long)noItems * 1000000000 / elapsed;
 			
-			System.out.println(noItems + " works @ " + elapsed + "ms. Pace: " + pace + " items/s");
+			System.out.println(noItems + " works @ " + elapsed / 1000000 + "ms. Pace: " + pace + " items/s");
 			
 			start = System.nanoTime();
 			
