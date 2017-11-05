@@ -30,13 +30,13 @@ public class QueueExample {
 			}
 			
 			while(!queue.isEmpty()) {
-				// Thread.onSpinWait();
+				Thread.onSpinWait();
 			}
 			
 			long elapsed = (System.currentTimeMillis() - start);
 			long pace = (long)noItems * 1000 / elapsed;
 			
-			System.out.println("finish all " + noItems + " works at " + elapsed + "ms. Pace: " + pace + " items/s");
+			System.out.println(noItems + " works @ " + elapsed + "ms. Pace: " + pace + " items/s");
 			
 			start = System.nanoTime();
 			
@@ -54,8 +54,6 @@ public class QueueExample {
 					throw new RuntimeException("Consumers dequeue mismatch, expected: " + expected + ", actual: " + consumers[i].getCounter());
 				}
 			}
-			
-			System.out.println("all threads stopped at " + (System.nanoTime() - start)/1000000 + "ms");
 		}
 	}
 	
