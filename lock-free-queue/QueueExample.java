@@ -1,14 +1,16 @@
 public class QueueExample {
 	
 		public static void main(String[] args) {
-			LockFreeQueue<Integer> buffer = new RingBuffer(1024 * 1024 * 16);
+			LockFreeQueue<Integer> buffer = new SPSCRingBuffer(1024 * 1024 * 16);
 	//		LockFreeQueue<Integer> queue = new ConcurrentLinkedList<>();
 	//		LockFreeQueue<Integer> javaQueue = new ConcurrentLinkedQueueWrapper<>();
 	
-			int noThreads = 3;
+			int noThreads = 1;
 			int noItems = 10000000;
 			
-			test(noThreads, noItems, buffer);
+			for(int i=0; i<10; i++) {
+				test(noThreads, noItems, buffer);
+			}
 	//		test(noThreads, noItems, queue);
 	//		test(noThreads, noItems, javaQueue);
 		}
@@ -47,6 +49,10 @@ public class QueueExample {
 					consumers[i].join();
 				} catch (InterruptedException e) {
 				}
+				long expected = (long)noItems * (noItems - 1) / 2;
+				if (consumers[i].getCounter() != expected) {
+					throw new RuntimeException("Consumers dequeue mismatch, expected: " + expected + ", actual: " + consumers[i].getCounter());
+				}
 			}
 			
 			System.out.println("all threads stopped at " + (System.nanoTime() - start)/1000000 + "ms");
@@ -55,11 +61,13 @@ public class QueueExample {
 	
 	class ConsumerThread extends Thread {
 		
-		private LockFreeQueue<?> queue;
+		private LockFreeQueue<Integer> queue;
 		
-		private int counter = 0;
+		private long counter = 0;
+
+		private int dequeued = 0;
 		
-		public ConsumerThread(LockFreeQueue<?> queue) {
+		public ConsumerThread(LockFreeQueue<Integer> queue) {
 			this.queue = queue;
 		}
 		
@@ -69,16 +77,20 @@ public class QueueExample {
 				while(!Thread.currentThread().isInterrupted() && queue.isEmpty()) {
 					Thread.onSpinWait();
 				}
-				queue.poll();
-				//if (item != null) counter++;
+				Integer item = queue.poll();
+				if (item != null) {
+					counter += item;
+					// dequeued++;
+				}
 			}
+			// System.out.println("Dequeued: " + dequeued);
 		}
 		
 		public void cancel() {
 			interrupt();
 		}
 		
-		public int getCounter() {
+		public long getCounter() {
 			return counter;
 		}
 	}
