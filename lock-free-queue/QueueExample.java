@@ -30,7 +30,7 @@ public class QueueExample {
 			}
 			
 			while(!queue.isEmpty()) {
-				Thread.onSpinWait();
+				// Thread.onSpinWait();
 			}
 			
 			long elapsed = (System.currentTimeMillis() - start);
@@ -65,8 +65,6 @@ public class QueueExample {
 		
 		private long counter = 0;
 
-		private int dequeued = 0;
-		
 		public ConsumerThread(LockFreeQueue<Integer> queue) {
 			this.queue = queue;
 		}
@@ -78,12 +76,8 @@ public class QueueExample {
 					Thread.onSpinWait();
 				}
 				Integer item = queue.poll();
-				if (item != null) {
-					counter += item;
-					// dequeued++;
-				}
+				if (item != null) counter += item;
 			}
-			// System.out.println("Dequeued: " + dequeued);
 		}
 		
 		public void cancel() {

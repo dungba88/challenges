@@ -8,7 +8,9 @@ public class SPSCRingBuffer implements LockFreeQueue<Integer> {
 
 	private volatile int head;
 
-	private volatile int tail;
+    private volatile int tail;
+    
+    public int counter = 0;
 
 	public SPSCRingBuffer(int maximumSize) {
 		if (!isPowerOf2(maximumSize)) {
@@ -24,9 +26,10 @@ public class SPSCRingBuffer implements LockFreeQueue<Integer> {
 	}
 
 	public boolean add(Integer number) {
-		if (isFull()) return false;
+        int nextTail = (tail + 1) & mask;
+		if (nextTail == head) return false;
         data[tail] = number;
-        tail = (tail + 1) & mask;
+        tail = nextTail;
 		return true;
 	}
 
@@ -35,10 +38,6 @@ public class SPSCRingBuffer implements LockFreeQueue<Integer> {
         int result = data[head];
         head = (head + 1) & mask;
         return result;
-	}
-
-	public boolean isFull() {
-		return (tail + 1) == head;
 	}
 
 	public boolean isEmpty() {
