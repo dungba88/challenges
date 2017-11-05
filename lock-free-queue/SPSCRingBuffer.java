@@ -8,7 +8,7 @@ public class SPSCRingBuffer implements LockFreeQueue<Integer> {
 
 	private volatile int head;
 
-    private volatile int tail;
+	private volatile int tail;
     
 	public SPSCRingBuffer(int maximumSize) {
 		if (!isPowerOf2(maximumSize)) {
