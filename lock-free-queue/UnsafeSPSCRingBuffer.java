@@ -13,7 +13,7 @@ public class UnsafeSPSCRingBuffer implements LockFreeQueue<Integer> {
 
 	private int mask;
 
-	private volatile int[] data;
+	private int[] data;
 
 	private volatile int head;
 
