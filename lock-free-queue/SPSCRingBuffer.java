@@ -10,8 +10,6 @@ public class SPSCRingBuffer implements LockFreeQueue<Integer> {
 
     private volatile int tail;
     
-    public int counter = 0;
-
 	public SPSCRingBuffer(int maximumSize) {
 		if (!isPowerOf2(maximumSize)) {
 			throw new RuntimeException("Maximum size must be power of 2");
