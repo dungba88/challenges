@@ -24,18 +24,18 @@ public class SPSCRingBuffer implements LockFreeQueue<Integer> {
 	}
 
 	public boolean add(Integer number) {
-        int nextTail = (tail + 1) & mask;
+		int nextTail = (tail + 1) & mask;
 		if (nextTail == head) return false;
-        data[tail] = number;
-        tail = nextTail;
+		data[tail] = number;
+		tail = nextTail;
 		return true;
 	}
 
 	public Integer poll() {
 		if (isEmpty()) return null;
-        int result = data[head];
-        head = (head + 1) & mask;
-        return result;
+		int result = data[head];
+		head = (head + 1) & mask;
+		return result;
 	}
 
 	public boolean isEmpty() {

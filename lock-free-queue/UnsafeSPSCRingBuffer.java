@@ -45,10 +45,10 @@ public class UnsafeSPSCRingBuffer implements LockFreeQueue<Integer> {
 	}
 
 	public boolean add(Integer number) {
-        int nextTail = (tail + 1) & mask;
+		int nextTail = (tail + 1) & mask;
 		if (nextTail == head) return false;
-        data[tail] = number;
-        UNSAFE.putOrderedInt(this, tailOffset, nextTail);
+		data[tail] = number;
+		UNSAFE.putOrderedInt(this, tailOffset, nextTail);
 		return true;
 	}
 
@@ -56,7 +56,7 @@ public class UnsafeSPSCRingBuffer implements LockFreeQueue<Integer> {
 		if (isEmpty()) return null;
 		int result = data[head];
 		UNSAFE.putOrderedInt(this, headOffset, (head + 1) & mask);
-        return result;
+		return result;
 	}
 
 	public boolean isEmpty() {
