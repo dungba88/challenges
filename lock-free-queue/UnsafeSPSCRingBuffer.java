@@ -39,7 +39,7 @@ public class UnsafeSPSCRingBuffer<T> implements LockFreeQueue<T> {
 		if (!isPowerOf2(maximumSize)) {
 			throw new RuntimeException("Maximum size must be power of 2");
 		}
-		data = new Integer[maximumSize][];
+		data = new Object[maximumSize];
 		mask = maximumSize - 1;
 		head = tail = 0;
 	}
