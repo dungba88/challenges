@@ -1,23 +1,25 @@
 import java.lang.reflect.Field;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import sun.misc.Unsafe;
 
-public class UnsafeSPSCRingBuffer implements LockFreeQueue<Integer> {
+public class UnsafeSPSCRingBuffer<T> implements LockFreeQueue<T> {
 
 	private static final long headOffset;
 
 	private static final long tailOffset;
 	
 	private static final Unsafe UNSAFE;
+	
+	private static final int dataBaseOffset;
+	
+	private static final int indexScale;
 
 	private int mask;
 
-	private int[] data;
+	private Object[] data;
 
 	private volatile int head;
 
-    private volatile int tail;
+	private volatile int tail;
 
 	static { 
 		try { 
@@ -26,16 +28,18 @@ public class UnsafeSPSCRingBuffer implements LockFreeQueue<Integer> {
 			UNSAFE = (Unsafe) field.get(null); 
 			headOffset = UNSAFE.objectFieldOffset(UnsafeSPSCRingBuffer.class.getDeclaredField("head"));
 			tailOffset = UNSAFE.objectFieldOffset(UnsafeSPSCRingBuffer.class.getDeclaredField("tail"));
+			dataBaseOffset = UNSAFE.arrayBaseOffset(Object[].class);
+			indexScale = UNSAFE.arrayIndexScale(Object[].class);
 		} catch (Exception e) { 
 			throw new AssertionError(e); 
-		} 
-	} 
+		}
+	}
 
 	public UnsafeSPSCRingBuffer(int maximumSize) {
 		if (!isPowerOf2(maximumSize)) {
 			throw new RuntimeException("Maximum size must be power of 2");
 		}
-		data = new int[maximumSize];
+		data = new Integer[maximumSize][];
 		mask = maximumSize - 1;
 		head = tail = 0;
 	}
@@ -44,18 +48,18 @@ public class UnsafeSPSCRingBuffer implements LockFreeQueue<Integer> {
 		return (maximumSize & (maximumSize - 1)) == 0;
 	}
 
-	public boolean add(Integer number) {
-		int nextTail = (tail + 1) & mask;
+	public boolean add(Object number) {
+		int nextTail = (tail + indexScale) & mask;
 		if (nextTail == head) return false;
-		data[tail] = number;
+		UNSAFE.putObject(data, dataBaseOffset + tail, number);
 		UNSAFE.putOrderedInt(this, tailOffset, nextTail);
 		return true;
 	}
 
-	public Integer poll() {
+	public T poll() {
 		if (isEmpty()) return null;
-		int result = data[head];
-		UNSAFE.putOrderedInt(this, headOffset, (head + 1) & mask);
+		T result = (T)UNSAFE.getObject(data, dataBaseOffset + head);
+		UNSAFE.putOrderedInt(this, headOffset, (head + indexScale) & mask);
 		return result;
 	}
 

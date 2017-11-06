@@ -5,7 +5,7 @@ public class QueueExample {
 	public static void main(String[] args) {
 		// LockFreeQueue<Integer> buffer = new SPSCRingBuffer(1024 * 1024 * 16);
 		// LockFreeQueue<Integer> unsafeBuffer = new UnsafeSPSCRingBuffer(1024 * 1024 * 16);
-		LockFreeQueue<Integer[]> batchUnsafeBuffer = new BatchUnsafeSPSCRingBuffer(1024 * 2);
+		LockFreeQueue<Integer[]> batchUnsafeBuffer = new UnsafeSPSCRingBuffer<Integer[]>(1024);
 //		LockFreeQueue<Integer> queue = new ConcurrentLinkedList<>();
 //		LockFreeQueue<Integer> javaQueue = new ConcurrentLinkedQueueWrapper<>();
 
@@ -13,11 +13,11 @@ public class QueueExample {
 		int noItems = 1000000;
 
 		long iterations = 10;
-		long totalSafe = 0;
+//		long totalSafe = 0;
+//		long maxSafe = -1;
+//		long minSafe = Long.MAX_VALUE;
 		long totalUnsafe = 0;
-		long maxSafe = -1;
 		long maxUnsafe = -1;
-		long minSafe = Long.MAX_VALUE;
 		long minUnsafe = Long.MAX_VALUE;
 		
 		for(int i=0; i<iterations; i++) {
@@ -33,7 +33,7 @@ public class QueueExample {
 			if (minUnsafe > unsafe) minUnsafe = unsafe;
 		}
 
-		// System.out.println("Safe average pace: " + totalSafe / iterations + ". Max: " + maxSafe + ". Min: " + minSafe);
+//		System.out.println("Safe average pace: " + totalSafe / iterations + ". Max: " + maxSafe + ". Min: " + minSafe);
 		System.out.println("Unsafe average pace: " + totalUnsafe / iterations + ". Max: " + maxUnsafe + ". Min: " + minUnsafe);
 //		test(noThreads, noItems, queue);
 //		test(noThreads, noItems, javaQueue);
@@ -77,7 +77,7 @@ public class QueueExample {
 				consumers[i].join();
 			} catch (InterruptedException e) {
 			}
-			long expected = (long)noItems * (noItems - 1) * 1024 / 2;
+			long expected = (long)noItems * (noItems - 1) * BATCH_SIZE / 2;
 			if (consumers[i].getCounter() != expected) {
 				throw new RuntimeException("Consumers dequeue mismatch, expected: " + expected + ", actual: " + consumers[i].getCounter());
 			}
