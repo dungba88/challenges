@@ -5,7 +5,7 @@ public class QueueExample {
 	public static void main(String[] args) {
 		// LockFreeQueue<Integer> buffer = new SPSCRingBuffer(1024 * 1024 * 16);
 		// LockFreeQueue<Integer> unsafeBuffer = new UnsafeSPSCRingBuffer(1024 * 1024 * 16);
-		LockFreeQueue<Integer[]> batchUnsafeBuffer = new BatchUnsafeSPSCRingBuffer(1024 * 2);
+		LockFreeQueue<Integer[]> batchUnsafeBuffer = new BatchUnsafeSPSCRingBuffer(1024);
 //		LockFreeQueue<Integer> queue = new ConcurrentLinkedList<>();
 //		LockFreeQueue<Integer> javaQueue = new ConcurrentLinkedQueueWrapper<>();
 
