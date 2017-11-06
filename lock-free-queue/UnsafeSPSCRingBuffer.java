@@ -21,8 +21,8 @@ public class UnsafeSPSCRingBuffer<T> implements LockFreeQueue<T> {
 
 	private volatile int tail;
 
-	static { 
-		try { 
+	static {
+		try {
 			Field field = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
 			field.setAccessible(true);
 			UNSAFE = (Unsafe) field.get(null);
