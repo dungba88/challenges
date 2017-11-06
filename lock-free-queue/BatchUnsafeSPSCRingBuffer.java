@@ -17,7 +17,7 @@ public class BatchUnsafeSPSCRingBuffer implements LockFreeQueue<Integer[]> {
 
 	private volatile int head;
 
-    private volatile int tail;
+	private volatile int tail;
 
 	static { 
 		try { 
