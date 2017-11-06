@@ -12,7 +12,7 @@ public class QueueExample {
 		int noThreads = 1;
 		int noItems = 1000000;
 
-		long iterations = 1;
+		long iterations = 10;
 		long totalSafe = 0;
 		long totalUnsafe = 0;
 		long maxSafe = -1;
