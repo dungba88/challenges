@@ -23,15 +23,15 @@ public class UnsafeSPSCRingBuffer<T> implements LockFreeQueue<T> {
 
 	static { 
 		try { 
-			Field field = sun.misc.Unsafe.class.getDeclaredField("theUnsafe"); 
+			Field field = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
 			field.setAccessible(true);
-			UNSAFE = (Unsafe) field.get(null); 
+			UNSAFE = (Unsafe) field.get(null);
 			headOffset = UNSAFE.objectFieldOffset(UnsafeSPSCRingBuffer.class.getDeclaredField("head"));
 			tailOffset = UNSAFE.objectFieldOffset(UnsafeSPSCRingBuffer.class.getDeclaredField("tail"));
 			dataBaseOffset = UNSAFE.arrayBaseOffset(Object[].class);
 			indexScale = UNSAFE.arrayIndexScale(Object[].class);
-		} catch (Exception e) { 
-			throw new AssertionError(e); 
+		} catch (Exception e) {
+			throw new AssertionError(e);
 		}
 	}
 
