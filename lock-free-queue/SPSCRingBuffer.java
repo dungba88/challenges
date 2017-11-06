@@ -1,10 +1,8 @@
-import java.util.concurrent.atomic.AtomicBoolean;
-
-public class SPSCRingBuffer implements LockFreeQueue<Integer> {
+public class SPSCRingBuffer<T> implements LockFreeQueue<T> {
 
 	private int mask;
 
-	private int[] data;
+	private Object[] data;
 
 	private volatile int head;
 
@@ -14,7 +12,7 @@ public class SPSCRingBuffer implements LockFreeQueue<Integer> {
 		if (!isPowerOf2(maximumSize)) {
 			throw new RuntimeException("Maximum size must be power of 2");
 		}
-		data = new int[maximumSize];
+		data = new Object[maximumSize];
 		mask = maximumSize - 1;
 		head = tail = 0;
 	}
@@ -23,7 +21,7 @@ public class SPSCRingBuffer implements LockFreeQueue<Integer> {
 		return (maximumSize & (maximumSize - 1)) == 0;
 	}
 
-	public boolean add(Integer number) {
+	public boolean add(T number) {
 		int nextTail = (tail + 1) & mask;
 		if (nextTail == head) return false;
 		data[tail] = number;
@@ -31,9 +29,9 @@ public class SPSCRingBuffer implements LockFreeQueue<Integer> {
 		return true;
 	}
 
-	public Integer poll() {
+	public T poll() {
 		if (isEmpty()) return null;
-		int result = data[head];
+		T result = (T)data[head];
 		head = (head + 1) & mask;
 		return result;
 	}
