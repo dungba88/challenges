@@ -1,15 +1,18 @@
 public class QueueExample {
+
+	private final static int BATCH_SIZE = 1024;
 	
 	public static void main(String[] args) {
-		LockFreeQueue<Integer> buffer = new SPSCRingBuffer(1024 * 1024 * 16);
-		LockFreeQueue<Integer> unsafeBuffer = new UnsafeSPSCRingBuffer(1024 * 1024 * 16);
+		// LockFreeQueue<Integer> buffer = new SPSCRingBuffer(1024 * 1024 * 16);
+		// LockFreeQueue<Integer> unsafeBuffer = new UnsafeSPSCRingBuffer(1024 * 1024 * 16);
+		LockFreeQueue<Integer[]> batchUnsafeBuffer = new BatchUnsafeSPSCRingBuffer(1024 * 2);
 //		LockFreeQueue<Integer> queue = new ConcurrentLinkedList<>();
 //		LockFreeQueue<Integer> javaQueue = new ConcurrentLinkedQueueWrapper<>();
 
 		int noThreads = 1;
-		int noItems = 10000000;
+		int noItems = 1000000;
 
-		long iterations = 50;
+		long iterations = 1;
 		long totalSafe = 0;
 		long totalUnsafe = 0;
 		long maxSafe = -1;
@@ -19,24 +22,24 @@ public class QueueExample {
 		
 		for(int i=0; i<iterations; i++) {
 			// System.out.println("Testing Safe");
-			long safe = test(noThreads, noItems, buffer);
-			totalSafe += safe;
-			if (maxSafe < safe) maxSafe = safe;
-			if (minSafe > safe) minSafe = safe;
+			// long safe = test(noThreads, noItems, buffer);
+			// totalSafe += safe;
+			// if (maxSafe < safe) maxSafe = safe;
+			// if (minSafe > safe) minSafe = safe;
 			// System.out.println("Testing Unsafe");
-			long unsafe = test(noThreads, noItems, unsafeBuffer);
+			long unsafe = test(noThreads, noItems, batchUnsafeBuffer);
 			totalUnsafe += unsafe;
 			if (maxUnsafe < unsafe) maxUnsafe = unsafe;
 			if (minUnsafe > unsafe) minUnsafe = unsafe;
 		}
 
-		System.out.println("Safe average pace: " + totalSafe / iterations + ". Max: " + maxSafe + ". Min: " + minSafe);
+		// System.out.println("Safe average pace: " + totalSafe / iterations + ". Max: " + maxSafe + ". Min: " + minSafe);
 		System.out.println("Unsafe average pace: " + totalUnsafe / iterations + ". Max: " + maxUnsafe + ". Min: " + minUnsafe);
 //		test(noThreads, noItems, queue);
 //		test(noThreads, noItems, javaQueue);
 	}
 
-	private static long test(int noThreads, int noItems, LockFreeQueue<Integer>queue) {
+	private static long test(int noThreads, int noItems, LockFreeQueue<Integer[]>queue) {
 		ConsumerThread[] consumers = new ConsumerThread[noThreads];
 		for(int i=0; i<consumers.length; i++) {
 			consumers[i] = new ConsumerThread(queue);
@@ -44,20 +47,24 @@ public class QueueExample {
 			consumers[i].start();
 		}
 		
-		long start = System.nanoTime();
+		long start = System.currentTimeMillis();
 		
 		for(int i=0; i<noItems; i++) {
-			while (!queue.add(i)) { }
+			Integer[] batch = new Integer[BATCH_SIZE];
+			for(int j=0; j<batch.length; j++) {
+				batch[j] = i;
+			}
+			while (!queue.add(batch)) { }
 		}
 		
 		while(!queue.isEmpty()) {
 			Thread.onSpinWait();
 		}
 		
-		long elapsed = (System.nanoTime() - start);
-		long pace = (long)noItems * 1000000000 / elapsed;
+		long elapsed = (System.currentTimeMillis() - start);
+		long pace = (long)noItems * 1000 * BATCH_SIZE / elapsed;
 		
-		// System.out.println(noItems + " works @ " + elapsed / 1000000 + "ms. Pace: " + pace + " items/s");
+		System.out.println(noItems + " works @ " + elapsed + "ms. Pace: " + pace + " items/s");
 		
 		start = System.nanoTime();
 		
@@ -70,7 +77,7 @@ public class QueueExample {
 				consumers[i].join();
 			} catch (InterruptedException e) {
 			}
-			long expected = (long)noItems * (noItems - 1) / 2;
+			long expected = (long)noItems * (noItems - 1) * 1024 / 2;
 			if (consumers[i].getCounter() != expected) {
 				throw new RuntimeException("Consumers dequeue mismatch, expected: " + expected + ", actual: " + consumers[i].getCounter());
 			}
@@ -81,11 +88,11 @@ public class QueueExample {
 	
 class ConsumerThread extends Thread {
 	
-	private LockFreeQueue<Integer> queue;
+	private LockFreeQueue<Integer[]> queue;
 	
 	private long counter = 0;
 
-	public ConsumerThread(LockFreeQueue<Integer> queue) {
+	public ConsumerThread(LockFreeQueue<Integer[]> queue) {
 		this.queue = queue;
 	}
 	
@@ -95,8 +102,12 @@ class ConsumerThread extends Thread {
 			while(!Thread.currentThread().isInterrupted() && queue.isEmpty()) {
 				Thread.onSpinWait();
 			}
-			Integer item = queue.poll();
-			if (item != null) counter += item;
+			Integer[] item = queue.poll();
+			if (item != null) {
+				for(int i=0; i<item.length; i++) {
+					counter += item[i];
+				}
+			}
 		}
 	}
 	
