@@ -4,18 +4,17 @@ public class QueueExample {
 	
 	public static void main(String[] args) {
 		// LockFreeQueue<Integer> buffer = new SPSCRingBuffer(1024 * 1024 * 16);
-		// LockFreeQueue<Integer> unsafeBuffer = new UnsafeSPSCRingBuffer(1024 * 1024 * 16);
-		LockFreeQueue<Integer[]> batchUnsafeBuffer = new UnsafeSPSCRingBuffer<Integer[]>(1024);
-//		LockFreeQueue<Integer> queue = new ConcurrentLinkedList<>();
-//		LockFreeQueue<Integer> javaQueue = new ConcurrentLinkedQueueWrapper<>();
+		LockFreeQueue<Integer[]> unsafeBuffer = new UnsafeSPSCRingBuffer<Integer[]>(1024);
+		// LockFreeQueue<Integer> queue = new ConcurrentLinkedList<>();
+		// LockFreeQueue<Integer> javaQueue = new ConcurrentLinkedQueueWrapper<>();
 
 		int noThreads = 1;
 		int noItems = 1000000;
 
 		long iterations = 10;
-//		long totalSafe = 0;
-//		long maxSafe = -1;
-//		long minSafe = Long.MAX_VALUE;
+		// long totalSafe = 0;
+		// long maxSafe = -1;
+		// long minSafe = Long.MAX_VALUE;
 		long totalUnsafe = 0;
 		long maxUnsafe = -1;
 		long minUnsafe = Long.MAX_VALUE;
@@ -26,24 +25,24 @@ public class QueueExample {
 			// totalSafe += safe;
 			// if (maxSafe < safe) maxSafe = safe;
 			// if (minSafe > safe) minSafe = safe;
-			// System.out.println("Testing Unsafe");
-			long unsafe = test(noThreads, noItems, batchUnsafeBuffer);
+			System.out.println("Testing Unsafe");
+			long unsafe = test(noThreads, noItems, unsafeBuffer);
 			totalUnsafe += unsafe;
 			if (maxUnsafe < unsafe) maxUnsafe = unsafe;
 			if (minUnsafe > unsafe) minUnsafe = unsafe;
 		}
 
-//		System.out.println("Safe average pace: " + totalSafe / iterations + ". Max: " + maxSafe + ". Min: " + minSafe);
+		// System.out.println("Safe average pace: " + totalSafe / iterations + ". Max: " + maxSafe + ". Min: " + minSafe);
 		System.out.println("Unsafe average pace: " + totalUnsafe / iterations + ". Max: " + maxUnsafe + ". Min: " + minUnsafe);
-//		test(noThreads, noItems, queue);
-//		test(noThreads, noItems, javaQueue);
+		// test(noThreads, noItems, queue);
+		// test(noThreads, noItems, javaQueue);
 	}
 
 	private static long test(int noThreads, int noItems, LockFreeQueue<Integer[]>queue) {
 		ConsumerThread[] consumers = new ConsumerThread[noThreads];
 		for(int i=0; i<consumers.length; i++) {
 			consumers[i] = new ConsumerThread(queue);
-//			consumers[i].setPriority(Thread.MAX_PRIORITY);
+			// consumers[i].setPriority(Thread.MAX_PRIORITY);
 			consumers[i].start();
 		}
 		
