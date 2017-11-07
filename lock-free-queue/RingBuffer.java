@@ -1,81 +1,75 @@
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class RingBuffer implements LockFreeQueue<Integer> {
-
+public class RingBuffer<T> implements LockFreeQueue<T> {
+	
 	private int mask;
 
-	private int maxSize;
-
-	private volatile int[] data;
-
-	private volatile int start;
-
-	private volatile int length;
-
-//	private SpinLock lock = new SpinLock();
+	private Object[] data;
+	
+	private volatile int head;
+	
+	private volatile int tail;
 	
 	private AtomicBoolean lock = new AtomicBoolean(false);
+	
+	private static final long headOffset;
 
+	private static final long tailOffset;
+
+	private static final int dataBaseOffset;
+
+	private static final int indexScale;
+	
+	static {
+		try {
+			headOffset = UnsafeUtils.objectFieldOffset(RingBuffer.class.getDeclaredField("head"));
+			tailOffset = UnsafeUtils.objectFieldOffset(RingBuffer.class.getDeclaredField("tail"));
+			dataBaseOffset = UnsafeUtils.arrayBaseOffset(Object[].class);
+			indexScale = UnsafeUtils.arrayIndexScale(Object[].class);
+		} catch (Exception e) {
+			throw new AssertionError(e);
+		}
+	}
+	
 	public RingBuffer(int maximumSize) {
 		if (!isPowerOf2(maximumSize)) {
 			throw new RuntimeException("Maximum size must be power of 2");
 		}
-		data = new int[maximumSize];
+		data = new Object[maximumSize];
+		head = tail = 0;
 		mask = maximumSize - 1;
-		maxSize = maximumSize;
-		start = length = 0;
 	}
-
+	
 	private boolean isPowerOf2(int maximumSize) {
 		return (maximumSize & (maximumSize - 1)) == 0;
 	}
 
-	public boolean add(Integer number) {
-		if (isFull()) return false;
+	public boolean add(T number) {
 		while(!lock.compareAndSet(false, true)) {}
 		try {
-			if (isFull()) return false;
-			data[(start + length) & mask] = number;
-			length++;
+			int nextTail = (tail + indexScale) & mask;
+			if (nextTail == head) return false;
+			UnsafeUtils.putObject(data, dataBaseOffset + tail, number);
+			UnsafeUtils.putOrderedInt(this, tailOffset, nextTail);
 		} finally {
 			lock.set(false);
 		}
 		return true;
 	}
 
-	public Integer poll() {
-		if (isEmpty()) return null;
+	public T poll() {
 		while(!lock.compareAndSet(false, true)) {}
 		try {
 			if (isEmpty()) return null;
-			int result = data[start];
-			start = (start + 1) & mask;
-			length--;
+			T result = (T) UnsafeUtils.getObject(data, dataBaseOffset + head);
+			UnsafeUtils.putOrderedInt(this, headOffset, (head + indexScale) & mask);
 			return result;
 		} finally {
 			lock.set(false);
 		}
 	}
-
-	public boolean isFull() {
-		return length == maxSize;
-	}
-
+	
 	public boolean isEmpty() {
-		return length == 0;
-	}
-}
-
-class SpinLock {
-
-	private AtomicBoolean lock = new AtomicBoolean(false);
-
-	public void lock() {
-		while (!lock.compareAndSet(false, true)) {
-		}
-	}
-
-	public void unlock() {
-		lock.set(false);
+		return head == tail;
 	}
 }
