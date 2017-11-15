@@ -1,6 +1,6 @@
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class RingBuffer<T> implements LockFreeQueue<T> {
+public class SPMCRingBuffer<T> implements LockFreeQueue<T> {
 	
 	private int mask;
 
@@ -22,8 +22,8 @@ public class RingBuffer<T> implements LockFreeQueue<T> {
 	
 	static {
 		try {
-			headOffset = UnsafeUtils.objectFieldOffset(RingBuffer.class.getDeclaredField("head"));
-			tailOffset = UnsafeUtils.objectFieldOffset(RingBuffer.class.getDeclaredField("tail"));
+			headOffset = UnsafeUtils.objectFieldOffset(SPMCRingBuffer.class.getDeclaredField("head"));
+			tailOffset = UnsafeUtils.objectFieldOffset(SPMCRingBuffer.class.getDeclaredField("tail"));
 			dataBaseOffset = UnsafeUtils.arrayBaseOffset(Object[].class);
 			indexScale = UnsafeUtils.arrayIndexScale(Object[].class);
 		} catch (Exception e) {
@@ -31,7 +31,7 @@ public class RingBuffer<T> implements LockFreeQueue<T> {
 		}
 	}
 	
-	public RingBuffer(int maximumSize) {
+	public SPMCRingBuffer(int maximumSize) {
 		if (!isPowerOf2(maximumSize)) {
 			throw new RuntimeException("Maximum size must be power of 2");
 		}
@@ -45,15 +45,10 @@ public class RingBuffer<T> implements LockFreeQueue<T> {
 	}
 
 	public boolean add(T number) {
-		while(!lock.compareAndSet(false, true)) {}
-		try {
-			int nextTail = (tail + indexScale) & mask;
-			if (nextTail == head) return false;
-			UnsafeUtils.putObject(data, dataBaseOffset + tail, number);
-			UnsafeUtils.putOrderedInt(this, tailOffset, nextTail);
-		} finally {
-			lock.set(false);
-		}
+		int nextTail = (tail + indexScale) & mask;
+		if (nextTail == head) return false;
+		UnsafeUtils.putObject(data, dataBaseOffset + tail, number);
+		UnsafeUtils.putOrderedInt(this, tailOffset, nextTail);
 		return true;
 	}
 
